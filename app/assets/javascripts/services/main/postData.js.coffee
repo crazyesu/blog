@@ -8,14 +8,22 @@ angular.module('Blog').factory('postData', ['$http', ($http) ->
   console.log("Initialized postData.")
 
 
-  postData.loadPosts = ->
+  postData.loadPosts = (deferred) ->
     if !postData.isLoaded
       $http.get('./posts.json').success( (data) ->
         postData.data.posts = data
+        postData.isLoaded = true
         console.log('Successfully loaded posts.')
+        if deferred
+          deferred.resolve()
       ).error( ->
         console.error('Failed to load posts.')
+        if deferred
+          deferred.reject('Failed to load posts.')
       )
+    else
+      if deferred
+        deferred.resolve()
 
 
 
